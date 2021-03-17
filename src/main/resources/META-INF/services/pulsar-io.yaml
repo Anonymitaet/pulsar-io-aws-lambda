@@ -17,7 +17,7 @@
 # under the License.
 #
 
-name: sqs
+name: aws-lambda
 description: Pulsar IO Connector for AWS Lambda
 sinkClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaSink
 sinkConfigClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaConnectorConfig

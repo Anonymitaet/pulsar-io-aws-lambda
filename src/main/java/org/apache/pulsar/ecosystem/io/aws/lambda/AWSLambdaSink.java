@@ -16,7 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.pulsar.ecosystem.io.aws.lambda;
+
+import org.apache.pulsar.functions.api.Record;
+
 /**
- * Classes for implementing a pulsar IO connector that generates randomized messages.
+ * A sink connector for AWS Lambda.
  */
-package org.apache.pulsar.ecosystem.io.random;
+public class AWSLambdaSink extends AWSLambdaAbstractSink<byte[]> {
+
+    @Override
+    public byte[] convertToLambdaPayload(Record<byte[]> message) {
+        return message.getValue();
+    }
+}
