@@ -84,7 +84,7 @@ public class AWSLambdaConnectorConfigTest {
         properties.put("lambdaFunctionName", "test-function");
 
         try {
-            AWSLambdaSink sink = new AWSLambdaSink();
+            AWSLambdaBytesSink sink = new AWSLambdaBytesSink();
             sink.open(properties, null);
         } catch (Exception ex) {
             assertNotNull("Missing param should lead to exception", ex);

@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -17,7 +18,18 @@
 # under the License.
 #
 
-name: aws-lambda
-description: Pulsar IO Connector for AWS Lambda
-sinkClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaBytesSink
-sinkConfigClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaConnectorConfig
+set -e
+
+if [ $# -eq 0 ]; then
+    echo "Required argument with new project version"
+    exit 1
+fi
+
+NEW_VERSION=$1
+
+# Go to top level project directory
+pushd $(dirname "$0")/..
+
+mvn versions:set -DnewVersion=$NEW_VERSION
+
+popd

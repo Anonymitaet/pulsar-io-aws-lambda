@@ -23,7 +23,13 @@ import com.amazonaws.services.lambda.model.InvocationType;
 import com.amazonaws.services.lambda.model.InvokeRequest;
 import com.amazonaws.services.lambda.model.InvokeResult;
 import com.amazonaws.services.lambda.model.RequestTooLargeException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -42,7 +48,7 @@ import org.apache.pulsar.io.core.SinkContext;
  * Abstract Class for pulsar sink connector to AWS Lambda.
  */
 @Slf4j
-public abstract class AWSLambdaAbstractSink<T> extends AbstractAwsConnector implements Sink<T> {
+public class AWSLambdaAbstractSink<T> extends AbstractAwsConnector implements Sink<T> {
     public static final long DEFAULT_INVOKE_TIMEOUT_MS = 5 * 60 * 1000L;
     private static final int MAX_SYNC_PAYLOAD_SIZE_BYTES = (6 * 1024 * 1024);
     private static final int MAX_ASYNC_PAYLOAD_SIZE_BYTES = (256 * 1024);
@@ -108,7 +114,7 @@ public abstract class AWSLambdaAbstractSink<T> extends AbstractAwsConnector impl
     }
 
     public InvokeResult invoke(final Record<T> record) throws
-            InterruptedException, ExecutionException, TimeoutException {
+            InterruptedException, ExecutionException, TimeoutException, JsonProcessingException {
         final InvocationType type = getConfig().isSynchronousInvocation()
                 ? InvocationType.RequestResponse : InvocationType.Event;
 
@@ -127,12 +133,12 @@ public abstract class AWSLambdaAbstractSink<T> extends AbstractAwsConnector impl
             if (getConfig().isSynchronousInvocation()
                     && payload.length > MAX_SYNC_PAYLOAD_SIZE_BYTES) {
                 log.error("record payload size {} is exceed the max payload "
-                                + "size for synchronous lambda function invoke.", payload.length);
+                        + "size for synchronous lambda function invoke.", payload.length);
 
             } else if (!getConfig().isSynchronousInvocation()
                     && payload.length > MAX_ASYNC_PAYLOAD_SIZE_BYTES) {
                 log.error("record payload size {} is exceed the max payload "
-                                + "size for asynchronous lambda function invoke.", payload.length);
+                        + "size for asynchronous lambda function invoke.", payload.length);
 
             }
             throw e;
@@ -149,6 +155,48 @@ public abstract class AWSLambdaAbstractSink<T> extends AbstractAwsConnector impl
         }
     }
 
-    public abstract byte[] convertToLambdaPayload(Record<T> message);
+    public byte[] convertToLambdaPayload(Record<T> message) throws JsonProcessingException {
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        try {
+            return mapper.writeValueAsBytes(message);
+        } catch (JsonProcessingException e) {
+            try {
+                // check if message value is valid json
+                mapper.readTree(new String((byte[]) message.getValue(), StandardCharsets.UTF_8));
+                return (byte[]) message.getValue();
+            } catch (Exception ex) {
+                // create InvokePayload json string
+                InvokePayload payload = new InvokePayload();
+                if (message.getValue() != null) {
+                    payload.setValue(new String((byte[]) message.getValue(), StandardCharsets.UTF_8));
+                }
+                if (message.getKey().isPresent()) {
+                    payload.setKey(message.getKey().get());
+                }
+                if (message.getDestinationTopic().isPresent()) {
+                    payload.setDestinationTopic(message.getDestinationTopic().get());
+                }
+                if (message.getEventTime().isPresent()) {
+                    payload.setEventTime(message.getEventTime().get());
+                }
+                if (message.getPartitionId().isPresent()) {
+                    payload.setPartitionId(message.getPartitionId().get());
+                }
+                if (message.getTopicName().isPresent()) {
+                    payload.setTopicName(message.getTopicName().get());
+                }
+                if (message.getProperties() != null && !message.getProperties().isEmpty()) {
+                    Map<String, String> p = new HashMap<>();
+                    message.getProperties().forEach(p::put);
+                    payload.setProperties(p);
+                }
+
+                return mapper.writeValueAsBytes(payload);
+            }
+        }
+    }
 }
 

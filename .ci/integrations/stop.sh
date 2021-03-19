@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -17,7 +18,16 @@
 # under the License.
 #
 
-name: aws-lambda
-description: Pulsar IO Connector for AWS Lambda
-sinkClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaBytesSink
-sinkConfigClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaConnectorConfig
+set -e
+
+SRC_DIR=$(git rev-parse --show-toplevel)
+cd $SRC_DIR
+
+IMAGE_NAME=pulsar-io-aws-lambda-test:latest
+
+docker kill pulsar-io-aws-lambda-test || true
+docker kill localstack || true
+docker network rm aws-lambda-test || true
+docker rmi ${IMAGE_NAME} || true
+
+echo "Stopped Test Pulsar Service"

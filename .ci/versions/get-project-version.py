@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -17,7 +18,12 @@
 # under the License.
 #
 
-name: aws-lambda
-description: Pulsar IO Connector for AWS Lambda
-sinkClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaBytesSink
-sinkConfigClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaConnectorConfig
+import xml.etree.ElementTree as ET
+from os.path import dirname, realpath, join
+
+# Derive the POM path from the current script location
+TOP_LEVEL_PATH = dirname(dirname(dirname(realpath(__file__))))
+POM_PATH = join(TOP_LEVEL_PATH, 'pom.xml')
+
+root = ET.XML(open(POM_PATH).read())
+print(root.find('{http://maven.apache.org/POM/4.0.0}version').text)

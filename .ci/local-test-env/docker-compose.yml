@@ -1,0 +1,22 @@
+version: "2.4"
+services:
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      SERVICES: lambda,iam
+      HOST_TMP_FOLDER: ${PWD}/.localstack
+      DEFAULT_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
+      LAMBDA_REMOTE_DOCKER: "false"
+    ports:
+      - 4566:4566
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .localstack:/tmp/localstack
+  pulsar:
+    image: apachepulsar/pulsar-standalone:latest
+    ports:
+      - 8080:8080
+      - 6650:6650
+    volumes:
+      - ../../:/pulsar-io-aws-lambda

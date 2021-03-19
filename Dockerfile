@@ -17,7 +17,7 @@
 # under the License.
 #
 
-name: aws-lambda
-description: Pulsar IO Connector for AWS Lambda
-sinkClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaBytesSink
-sinkConfigClass: org.apache.pulsar.ecosystem.io.aws.lambda.AWSLambdaConnectorConfig
+FROM apachepulsar/pulsar-standalone:latest
+
+### Add test scripts
+COPY ./ /pulsar-io-aws-lambda

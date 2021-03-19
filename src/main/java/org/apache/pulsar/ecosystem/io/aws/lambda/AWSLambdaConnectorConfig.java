@@ -31,7 +31,7 @@ import org.apache.pulsar.io.aws.AwsCredentialProviderPlugin;
 import org.apache.pulsar.io.core.annotations.FieldDoc;
 
 /**
- * The configuration class for {@link AWSLambdaSink}.
+ * The configuration class for {@link AWSLambdaBytesSink}.
  */
 @Data
 public class AWSLambdaConnectorConfig implements Serializable {
