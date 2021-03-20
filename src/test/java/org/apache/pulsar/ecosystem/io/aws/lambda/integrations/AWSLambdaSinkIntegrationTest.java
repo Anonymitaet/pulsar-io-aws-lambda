@@ -62,7 +62,7 @@ public class AWSLambdaSinkIntegrationTest {
                 .producerName(PULSAR_PRODUCER_NAME)
                 .create();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             pulsarProducer.newMessage().value(MSG + i).send();
         }
 
@@ -79,8 +79,9 @@ public class AWSLambdaSinkIntegrationTest {
         SinkStatus status = pulsarAdmin.sinks().getSinkStatus("public", "default", PULSAR_SINK_NAME);
         Assert.assertEquals(1, status.getNumRunning());
         Assert.assertNotNull(status.getInstances().get(0));
-        Assert.assertEquals(100, status.getInstances().get(0).getStatus().numReadFromPulsar);
-        Assert.assertEquals(100, status.getInstances().get(0).getStatus().numWrittenToSink);
+        Thread.sleep(10 * 5000);
+        Assert.assertEquals(10, status.getInstances().get(0).getStatus().numReadFromPulsar);
+        Assert.assertEquals(10, status.getInstances().get(0).getStatus().numWrittenToSink);
 
         pulsarAdmin.close();
     }
