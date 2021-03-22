@@ -11,7 +11,9 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        configs: [ "test-pulsar-io-aws-lambda-sink", "test-pulsar-io-aws-lambda-sink-async" ]
     steps:
       - uses: actions/checkout@v1
       - name: Setup JDK 1.8
@@ -23,6 +25,8 @@ jobs:
         run: mvn clean package -DskipTests
 
       - name: test
+        env:
+          CONNECTOR_CONFIG: ${{ matrix.configs }}
         run: |
           ./.ci/integrations/start.sh
           mvn clean package -DskipTests

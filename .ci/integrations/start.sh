@@ -25,6 +25,7 @@ cd $SRC_DIR
 
 IMAGE_NAME=pulsar-io-aws-lambda-test:latest
 MVN_VERSION=`${SRC_DIR}/.ci/versions/get-project-version.py`
+CONNECTOR_CONFIG=${CONNECTOR_CONFIG:-"test-pulsar-io-aws-lambda-sink"}
 
 docker build -t ${IMAGE_NAME} .
 
@@ -85,7 +86,7 @@ $PULSAR_ADMIN sinks reload
 sleep 60s
 $PULSAR_ADMIN sinks create -t aws-lambda \
         --tenant public --namespace default --name test-aws-lambda-sink \
-        --sink-config-file /pulsar-io-aws-lambda/.ci/test-pulsar-io-aws-lambda-sink.yaml \
+        --sink-config-file /pulsar-io-aws-lambda/.ci/${CONNECTOR_CONFIG}.yaml \
         -i test-aws-lambda-sink-topic
 
 echo "-- ready to do integration tests"
