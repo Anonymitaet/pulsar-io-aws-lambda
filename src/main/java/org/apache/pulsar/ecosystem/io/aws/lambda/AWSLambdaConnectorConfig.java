@@ -80,27 +80,6 @@ public class AWSLambdaConnectorConfig implements Serializable {
             help = "Invoke a lambda function synchronously, false to invoke asynchronously.")
     private boolean synchronousInvocation = true;
 
-    @FieldDoc(
-            required = false,
-            defaultValue = "",
-            help = "The successful AWS Lambda results can be written to the target "
-                    + "topic when `synchronousInvocation=ture`.")
-    private String successResultTopic = "";
-
-    @FieldDoc(
-            required = false,
-            defaultValue = "",
-            help = "The failure AWS Lambda results can be written to the target "
-                    + "topic when `synchronousInvocation=ture`.")
-    private String failureResultTopic = "";
-
-    @FieldDoc(
-            required = true,
-            defaultValue = "10",
-            help = "The maximum number of messages to send as a batch for a single Lambda function invocation,"
-                    + " set to 1 to disable the batch mode.")
-    private int batchSize = 10;
-
     public static AWSLambdaConnectorConfig load(Map<String, Object> map) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(new ObjectMapper().writeValueAsString(map), AWSLambdaConnectorConfig.class);
