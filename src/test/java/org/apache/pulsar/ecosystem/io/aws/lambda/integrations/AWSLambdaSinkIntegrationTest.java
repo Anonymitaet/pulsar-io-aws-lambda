@@ -76,10 +76,10 @@ public class AWSLambdaSinkIntegrationTest {
                 .serviceHttpUrl("http://localhost:8080")
                 .build();
 
+        Thread.sleep(30 * 1000);
         SinkStatus status = pulsarAdmin.sinks().getSinkStatus("public", "default", PULSAR_SINK_NAME);
         Assert.assertEquals(1, status.getNumRunning());
         Assert.assertNotNull(status.getInstances().get(0));
-        Thread.sleep(10 * 5000);
         Assert.assertEquals(10, status.getInstances().get(0).getStatus().numReadFromPulsar);
         Assert.assertEquals(10, status.getInstances().get(0).getStatus().numWrittenToSink);
 

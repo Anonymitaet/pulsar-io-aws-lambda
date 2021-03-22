@@ -80,7 +80,10 @@ docker ps
 
 # run connector
 echo "-- run pulsar-io-aws-lambda sink connector"
-$PULSAR_ADMIN sinks create -a /pulsar-io-aws-lambda/target/pulsar-io-aws-lambda-${MVN_VERSION}.nar \
+docker exec -d pulsar-io-aws-lambda-test cp /pulsar-io-aws-lambda/target/pulsar-io-aws-lambda-${MVN_VERSION}.nar /pulsar/connectors/pulsar-io-aws-lambda-${MVN_VERSION}.nar
+$PULSAR_ADMIN sinks reload
+sleep 60s
+$PULSAR_ADMIN sinks create -t aws-lambda \
         --tenant public --namespace default --name test-aws-lambda-sink \
         --sink-config-file /pulsar-io-aws-lambda/.ci/test-pulsar-io-aws-lambda-sink.yaml \
         -i test-aws-lambda-sink-topic
