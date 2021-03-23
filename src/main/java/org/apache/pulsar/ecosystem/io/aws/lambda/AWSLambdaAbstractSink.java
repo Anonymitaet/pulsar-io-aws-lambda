@@ -37,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.pulsar.functions.api.Record;
 import org.apache.pulsar.io.aws.AbstractAwsConnector;
 import org.apache.pulsar.io.aws.AwsCredentialProviderPlugin;
@@ -47,7 +46,6 @@ import org.apache.pulsar.io.core.SinkContext;
 /**
  * Abstract Class for pulsar sink connector to AWS Lambda.
  */
-@Slf4j
 public class AWSLambdaAbstractSink<T> extends AbstractAwsConnector implements Sink<T> {
     public static final long DEFAULT_INVOKE_TIMEOUT_MS = 5 * 60 * 1000L;
     private static final int MAX_SYNC_PAYLOAD_SIZE_BYTES = (6 * 1024 * 1024);
@@ -96,19 +94,28 @@ public class AWSLambdaAbstractSink<T> extends AbstractAwsConnector implements Si
                 record.ack();
                 if (sinkContext != null) {
                     sinkContext.recordMetric(METRICS_TOTAL_SUCCESS, 1);
+                    if (getConfig().isSynchronousInvocation()) {
+                        sinkContext.getLogger().info("invoke lambda function {} successful with message {} "
+                                        + "and response {}",
+                                getFunctionName(), record, result);
+                    } else {
+                        sinkContext.getLogger().info("invoke lambda function {} successful with message {}",
+                                getFunctionName(), record);
+                    }
                 }
             } else {
-                log.error("failed send message to AWS Lambda function {}.", getFunctionName());
                 record.fail();
                 if (sinkContext != null) {
                     sinkContext.recordMetric(METRICS_TOTAL_FAILURE, 1);
+                    sinkContext.getLogger().error("failed send message to AWS Lambda function {}.", getFunctionName());
                 }
             }
         } catch (Exception e) {
-            log.error("failed send message to AWS Lambda function {} with error {}.", getFunctionName(), e);
             record.fail();
             if (sinkContext != null) {
                 sinkContext.recordMetric(METRICS_TOTAL_FAILURE, 1);
+                sinkContext.getLogger().error("failed send message to AWS Lambda function {} with error {}."
+                        , getFunctionName(), e);
             }
         }
     }
@@ -130,20 +137,23 @@ public class AWSLambdaAbstractSink<T> extends AbstractAwsConnector implements Si
         try {
             return futureResult.get(DEFAULT_INVOKE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (RequestTooLargeException e) {
-            if (getConfig().isSynchronousInvocation()
-                    && payload.length > MAX_SYNC_PAYLOAD_SIZE_BYTES) {
-                log.error("record payload size {} is exceed the max payload "
-                        + "size for synchronous lambda function invoke.", payload.length);
+            if (sinkContext != null) {
+                if (getConfig().isSynchronousInvocation()
+                        && payload.length > MAX_SYNC_PAYLOAD_SIZE_BYTES) {
+                    sinkContext.getLogger().error("record payload size {} is exceed the max payload "
+                            + "size for synchronous lambda function invoke.", payload.length);
+                } else if (!getConfig().isSynchronousInvocation()
+                        && payload.length > MAX_ASYNC_PAYLOAD_SIZE_BYTES) {
+                    sinkContext.getLogger().error("record payload size {} is exceed the max payload "
+                            + "size for asynchronous lambda function invoke.", payload.length);
 
-            } else if (!getConfig().isSynchronousInvocation()
-                    && payload.length > MAX_ASYNC_PAYLOAD_SIZE_BYTES) {
-                log.error("record payload size {} is exceed the max payload "
-                        + "size for asynchronous lambda function invoke.", payload.length);
-
+                }
             }
             throw e;
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
-            log.error(e.getLocalizedMessage(), e);
+            if (sinkContext != null) {
+                sinkContext.getLogger().error(e.getLocalizedMessage(), e);
+            }
             throw e;
         }
     }

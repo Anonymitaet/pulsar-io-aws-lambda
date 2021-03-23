@@ -34,7 +34,7 @@ configs:
   #
   # This field is *required*.
   #
-  lambdaFunctionName: "test-queue"
+  lambdaFunctionName: "test-function"
 
   # Fully-Qualified class name of implementation of AwsCredentialProviderPlugin.
   # It is a factory class which creates an AWSCredentialsProvider that will be used by aws client.
