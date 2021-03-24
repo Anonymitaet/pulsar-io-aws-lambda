@@ -27,7 +27,7 @@ fi
 
 NEW_VERSION=$1
 
-# Go to top level project directory
+# Go to the top level project directory
 pushd $(dirname "$0")/..
 
 mvn versions:set -DnewVersion=$NEW_VERSION
