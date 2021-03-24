@@ -174,7 +174,7 @@ This example describes how to use the AWS Lambda sink connector to pull data fro
 
 ### On-premises cluster
 
-This example explains how to create AWS Lambda sink connector in an on-premises cluster.
+This example explains how to create an AWS Lambda sink connector in an on-premises cluster.
 
 1. Copy the NAR package of the AWS Lambda connector to the Pulsar connectors directory.
 
