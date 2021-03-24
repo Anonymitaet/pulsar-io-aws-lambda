@@ -140,7 +140,7 @@ You can make the AWS Lambda sink connector as a built-in connector and use it on
 This example describes how to use the AWS Lambda sink connector to pull data from Pulsar topics and persist data to AWS Lambda in standalone mode.
 
 
-1. Prepare AWS Lambda service, make sure the lambda function is ready to use. 
+1. Prepare AWS Lambda service. Make sure the Lambda function is ready to use. 
  
     For more information, see [Getting Started with Amazon AWS Lambda](https://aws.amazon.com/lambda/getting-started/).
 
