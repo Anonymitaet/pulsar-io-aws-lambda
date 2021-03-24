@@ -65,7 +65,7 @@ You can create a configuration file (JSON or YAML) to set the following properti
 | `awsCredentialPluginName` | String|false | " " (empty string) | Fully-qualified class name of implementation of `AwsCredentialProviderPlugin`. |
 | `awsCredentialPluginParam` | String|true | " " (empty string) | JSON parameter to initialize `AwsCredentialsProviderPlugin`. |
 | `lambdaFunctionName` | String|true | " " (empty string) | The Lambda function that should be invoked by the messages. |
-| `synchronousInvocation` | Boolean|true | true | Invoke a lambda function synchronously, false to invoke asynchronously. |
+| `synchronousInvocation` | Boolean|true | true | `true` means invoking a Lambda function synchronously. <br>`false` means invoking a Lambda function asynchronously. |
 
 **Example**
 
