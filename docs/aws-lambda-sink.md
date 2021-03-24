@@ -212,7 +212,7 @@ This example explains how to create an AWS Lambda sink connector in an on-premis
     RUN curl https://github.com/streamnative/pulsar-io-aws-lambda/releases/download/v2.7.0/pulsar-io-aws-lambda-2.7.0.nar -o /pulsar/connectors/pulsar-io-aws-lambda-2.7.0.nar
     ```
 
-2. Extract the previous `--set` arguments from K8S to the file `pulsar.yaml`.
+2. Extract the previous `--set` arguments from K8S to the `pulsar.yaml` file.
 
     ```
     helm get values <release-name> > pulsar.yaml
