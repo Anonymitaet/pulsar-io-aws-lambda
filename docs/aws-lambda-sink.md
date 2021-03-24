@@ -194,7 +194,7 @@ This example explains how to create an AWS Lambda sink connector in an on-premis
     PULSAR_HOME/bin/pulsar-admin sinks available-sinks
     ```
 
-4. Create AWS Lambda sink connector on a Pulsar cluster using the [`pulsar-admin sinks create`](http://pulsar.apache.org/tools/pulsar-admin/2.8.0-SNAPSHOT/#-em-create-em--24) command.
+4. Create an AWS Lambda sink connector on a Pulsar cluster using the [`pulsar-admin sinks create`](http://pulsar.apache.org/tools/pulsar-admin/2.8.0-SNAPSHOT/#-em-create-em--24) command.
 
     ```
     PULSAR_HOME/bin/pulsar-admin sinks create \
