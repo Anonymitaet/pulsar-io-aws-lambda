@@ -1,0 +1,36 @@
+name: pulsar-io-aws-lambda integration tests
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configs: [ "test-pulsar-io-aws-lambda-sink", "test-pulsar-io-aws-lambda-sink-async" ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: build
+        run: mvn clean package -DskipTests
+
+      - name: test
+        env:
+          CONNECTOR_CONFIG: ${{ matrix.configs }}
+        run: |
+          ./.ci/integrations/start.sh
+          mvn clean package -DskipTests
+          mvn -Dtest=*IntegrationTest test -DfailIfNoTests=false
+
+      - name: cleanup
+        run: ./.ci/integrations/stop.sh

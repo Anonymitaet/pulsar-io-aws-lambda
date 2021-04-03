@@ -16,7 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.pulsar.ecosystem.io.aws.lambda;
+
+import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
- * Classes for implementing a pulsar IO connector that generates randomized messages.
+ * The payload class convert from
+ * {@link org.apache.pulsar.functions.api.Record}
+ * for AWS lambda invoke request.
  */
-package org.apache.pulsar.ecosystem.io.random;
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class InvokePayload {
+    private String key;
+    private String topicName;
+    private String partitionId;
+    private Long recordSequence;
+    private String destinationTopic;
+    private String value;
+    private Long eventTime;
+    private Map<String, String> properties;
+}
